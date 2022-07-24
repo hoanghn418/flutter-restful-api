@@ -36,7 +36,7 @@ void main() {
       expect(response.statusCode, 200);
     });
 
-    test('#test get details post', () async {
+    test('#test get details a post', () async {
       // tạo GET request
       String url = 'https://jsonplaceholder.typicode.com/posts/1';
       final response = await http.get(Uri.parse(url));
@@ -67,7 +67,7 @@ void main() {
   });
 
   group('#test POST request', () {
-    test('#test create post', () async {
+    test('#test create a post', () async {
       // cài đặt tham số POST request
       String url = 'https://jsonplaceholder.typicode.com/posts';
       Map<String, String> headers = {"Content-type": "application/json"};
@@ -104,7 +104,7 @@ void main() {
   });
 
   group('#test PUT request', () {
-    test('#test replace post', () async {
+    test('#test insert a post', () async {
       // cài đặt tham số PUT request
       String url = 'https://jsonplaceholder.typicode.com/posts/1';
       Map<String, String> headers = {"Content-type": "application/json"};
@@ -141,7 +141,7 @@ void main() {
   });
 
   group('#test PATH request', () {
-    test('#test edit post', () async {
+    test('#test update a post', () async {
       // cài đặt tham số PATCH request
       String url = 'https://jsonplaceholder.typicode.com/posts/1';
       Map<String, String> headers = {"Content-type": "application/json"};
@@ -178,7 +178,7 @@ void main() {
   });
 
   group('#test DELETE request', () {
-    test('#test delete post', () async {
+    test('#test delete a post', () async {
       // post 1
       String url = 'https://jsonplaceholder.typicode.com/posts/1';
       // tạo DELETE request
