@@ -1,6 +1,6 @@
 # flutter_api
 
-A new Flutter project.
+A demo Flutter project about working with RESTful api.
 
 ## Getting Started
 
