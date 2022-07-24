@@ -14,12 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<List<Post>> _postData;
+  late Future<List<Post>> _getPostListFuture;
+  Future<void>? _deletePostFuture;
+  int _deletePostId = -1;
 
   @override
   void initState() {
     super.initState();
-    _postData = ApiClient.instance.getPostList();
+    _getPostListFuture = ApiClient.instance.getPostList();
   }
 
   @override
@@ -32,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         width: double.infinity,
         child: Center(
           child: FutureBuilder<List<Post>>(
-            future: _postData,
+            future: _getPostListFuture,
             initialData: const [],
             builder: (
               BuildContext context,
@@ -45,15 +47,15 @@ class _HomePageState extends State<HomePage> {
                     const CircularProgressIndicator(),
                     Visibility(
                       visible: snapshot.hasData,
-                      child: _buildList(snapshot.data ?? []),
-                    )
+                      child: _buildActionList(snapshot.data ?? []),
+                    ),
                   ],
                 );
               } else if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
                   return const Text('Error');
                 } else if (snapshot.hasData) {
-                  return _buildList(snapshot.data ?? []);
+                  return _buildActionList(snapshot.data ?? []);
                 } else {
                   return const Text('Empty data');
                 }
@@ -67,7 +69,41 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildList(List<Post> postList) => ListView.builder(
+  Widget _buildActionList(List<Post> postList) {
+    return FutureBuilder<void>(
+      future: _deletePostFuture,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<void> snapshot,
+      ) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              _buildListView(postList),
+              const CircularProgressIndicator(),
+            ],
+          );
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            Future.delayed(const Duration(milliseconds: 500), () {
+              _showErrorDialog(
+                context,
+                'Cannot delete the post which has id $_deletePostId.',
+              );
+            });
+          } else {
+            postList.removeWhere((element) => element.id == _deletePostId);
+          }
+          return _buildListView(postList);
+        } else {
+          return _buildListView(postList);
+        }
+      },
+    );
+  }
+
+  Widget _buildListView(List<Post> postList) => ListView.builder(
         itemCount: postList.length,
         itemBuilder: (context, index) => Card(
           elevation: 6,
@@ -90,7 +126,11 @@ class _HomePageState extends State<HomePage> {
             trailing: IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                _deletePostItem(postList[index].id);
+                setState(() {
+                  final id = postList[index].id;
+                  _deletePostFuture = ApiClient.instance.deletePost(id);
+                  _deletePostId = id;
+                });
               },
             ),
             onTap: () {
@@ -108,5 +148,23 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  void _deletePostItem(int postId) {}
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Error!!"),
+          content: Text(message),
+          actions: <Widget>[
+            MaterialButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

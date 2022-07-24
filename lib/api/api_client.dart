@@ -35,5 +35,5 @@ abstract class ApiClient {
   Future<Post> getDetailsPost(@Path('id') int postId);
 
   @DELETE(ApiConstants.deletePost)
-  Future<Post> deletePost(@Path('id') int postId);
+  Future<void> deletePost(@Path('id') int postId);
 }
