@@ -3,11 +3,23 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'post.g.dart';
 
-List<Post> postFromJson(String str) =>
-    List<Post>.from(json.decode(str).map((x) => Post.fromJson(x)));
+List<Post> postFromJson(String str) => List<Post>.from(
+      // JSON String to a map
+      json.decode(str).map(
+            // Serialize map to a object
+            (x) => Post.fromJson(x),
+          ),
+    );
 
-String postToJson(List<Post> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+// Encode to JSON String
+String postToJson(List<Post> data) => json.encode(
+      List<dynamic>.from(
+        data.map(
+          // Deserialize object to a map
+          (x) => x.toJson(),
+        ),
+      ),
+    );
 
 @JsonSerializable()
 class Post {
